@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class UserDetailsImpl implements UserDetailsService {
 
     private final UserRepo userRepo;

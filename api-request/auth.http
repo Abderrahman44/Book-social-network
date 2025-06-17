@@ -1,0 +1,11 @@
+### Register a new user
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "abdat",
+  "lastName": "maestro",
+  "email": "abdat.nmk@email.com",
+  "password": "pass12345678"
+}
+
