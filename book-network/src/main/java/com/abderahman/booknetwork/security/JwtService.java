@@ -24,12 +24,11 @@ public class JwtService {
     private String secretKey;
 
 
-
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public <T> T extractClaim(String token, Function<Claims,T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -49,7 +48,10 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    private String generateToken(HashMap<String, Object> claims, UserDetails userDetails) {
+    public String generateToken(
+            HashMap<String, Object> claims,
+            UserDetails userDetails
+    ) {
 
 
         return buildToken(claims, userDetails, jwtExpiration);
@@ -60,7 +62,7 @@ public class JwtService {
             UserDetails userDetails,
             long jwtExpiration
     ) {
-        var authorities =  userDetails.getAuthorities()
+        var authorities = userDetails.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
@@ -71,13 +73,13 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .claim("authorities",authorities)
+                .claim("authorities", authorities)
                 .signWith(getSignInKey())
                 .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username  = extractUserName(token);
+        final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
@@ -86,7 +88,7 @@ public class JwtService {
     }
 
     private Date extractExpiration(String token) {
-        return extractClaim(token,Claims::getExpiration);
+        return extractClaim(token, Claims::getExpiration);
     }
 
     private Key getSignInKey() {
