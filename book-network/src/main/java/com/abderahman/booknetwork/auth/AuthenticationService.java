@@ -7,16 +7,16 @@ import com.abderahman.booknetwork.user.Token;
 import com.abderahman.booknetwork.user.TokenRepo;
 import com.abderahman.booknetwork.user.User;
 import com.abderahman.booknetwork.user.UserRepo;
-import io.jsonwebtoken.Jwts;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -109,5 +109,25 @@ public class AuthenticationService {
        claims.put("fullName", user.getFullName());
        var jwtToken = jwtService.generateToken(claims,user);
         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    @Transactional
+    public void activateAccount(String token) throws MessagingException {
+        // valid token
+        Token savedToken = tokenRepo.findByToken(token)
+                // todo exception
+                .orElseThrow(() -> new RuntimeException("Token not found"));
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+            sendValidationEmail(savedToken.getUser());
+            throw new RuntimeException("Token expired,new token has been send to the same email address ");
+        }
+        var user = userRepo.findById(savedToken.getUser().getId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setEnabled(true);
+        userRepo.save(user);
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepo.save(savedToken);
+
+
+
     }
 }
