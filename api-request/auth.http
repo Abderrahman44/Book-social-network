@@ -3,9 +3,9 @@ POST http://localhost:8080/api/v1/auth/register
 Content-Type: application/json
 
 {
-  "firstName": "abdat",
-  "lastName": "maestro",
-  "email": "abdat.nmk@email.com",
+  "firstName": "",
+  "lastName": "",
+  "email": "",
   "password": "pass12345678"
 }
 
