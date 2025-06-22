@@ -1,5 +1,6 @@
 package com.abderahman.booknetwork;
 
+import com.abderahman.booknetwork.config.ApplicationAuditAware;
 import com.abderahman.booknetwork.email.EmailService;
 import com.abderahman.booknetwork.role.Role;
 import com.abderahman.booknetwork.role.RoleRepo;
@@ -11,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableAsync
 public class BookNetworkApplication {
 
